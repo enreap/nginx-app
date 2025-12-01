@@ -87,21 +87,32 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Snyk Code/Dependency Scan') {
+        // stage('Snyk Code/Dependency Scan') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
+        //             dir('sonar-project-demo') {
+        //                 sh '''
+        //                     snyk auth $SNYK_TOKEN
+        //                     #./mvnw dependency:tree -DoutputType=dot --batch-mode --non-recursive
+        //                     snyk test --severity-threshold=low
+        //                     snyk monitor --package-manager=maven --all-projects --command=./mvnw    // Upload scan report
+        //                  '''
+        //             }
+        //         }
+        //     }
+        // }    
+        stage('Snyk Code Scan') {
             steps {
-                withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
-                    dir('sonar-project-demo') {
-                        sh '''
-                            snyk auth $SNYK_TOKEN
-                            #./mvnw dependency:tree -DoutputType=dot --batch-mode --non-recursive
-                            snyk test --severity-threshold=low
-                            snyk monitor --package-manager=maven --all-projects --command=./mvnw    // Upload scan report
-                         '''
-                    }
+                withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
+                    sh """
+                        snyk auth $SNYK_TOKEN
+                        snyk code test html --severity-threshold=medium
+                        # If you have dependencies (package.json, pom.xml), uncomment:
+                        # snyk test --severity-threshold=medium
+                    """
                 }
             }
-        }    
-
+        }
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
