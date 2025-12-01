@@ -6,7 +6,7 @@ pipeline {
 
     environment {
         // Repository & Branch
-        GIT_REPO_URL = 'https://github.com/enreap/sonar-project-demo'
+        GIT_REPO_URL = 'https://github.com/enreap/nginx-app.git'
         BRANCH_NAME  = 'main'
 
         // Jenkins tool configurations
