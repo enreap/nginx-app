@@ -1,18 +1,20 @@
-# Use a newer patched NGINX base image
-FROM nginx:1.25.3-bookworm
+# Use a newer, stable NGINX base image with patched packages
+FROM nginx:1.25.2-bookworm
 
-# Update OS packages and upgrade vulnerable package
+# Update packages and install only needed modules
 RUN apt-get update && \
-    apt-get install -y --only-upgrade abseil/libabsl20220623 && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+        nginx-module-xslt \
+        # remove old cache
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy HTML and JS files
+# Copy your HTML and JS
 COPY html /usr/share/nginx/html
 
 # Copy custom nginx.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 80
+# Expose port
 EXPOSE 80
 
 # Start NGINX
