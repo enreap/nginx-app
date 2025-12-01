@@ -15,7 +15,7 @@ pipeline {
         SONARQUBE_ENV = 'sonar-scanner'    // MUST match Jenkins configuration
         
         // Docker
-        DOCKER_IMAGE = "enreapdevopsteam/sonar-java-demo"
+        DOCKER_IMAGE = "enreapdevopsteam/nginx-app"
         DOCKER_USERNAME = "enreapdevopsteam"
         DOCKER_PAT = "dckr_pat_rXL6w8JnJahrGp06JlL1TVPW-gk"
         PATH = "${JAVA_HOME}/bin:${PATH}"
@@ -23,7 +23,7 @@ pipeline {
         // snyk = tool 'snyk'
         SNYK_TOKEN = credentials('SNYK_TOKEN')
         SNYK_MAVEN_EXECUTABLE = 'mvn'
-        PROJECT_DIR = "sonar-project-demo"
+        PROJECT_DIR = "nginx-app"
 
     }
 
@@ -119,18 +119,18 @@ pipeline {
                 sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
             }
         }
-        stage('Trivy Image Scan') {
-            steps {
-                sh '''
-                    trivy image $DOCKER_IMAGE:${BUILD_NUMBER} \
-                    --severity HIGH,CRITICAL \
-                     --format json --output trivy-image-report.json
-                 '''
-            }
-            post {
-                always { archiveArtifacts 'trivy-image-report.json' }
-            }
-        }
+        // stage('Trivy Image Scan') {
+        //     steps {
+        //         sh '''
+        //             trivy image $DOCKER_IMAGE:${BUILD_NUMBER} \
+        //             --severity HIGH,CRITICAL \
+        //              --format json --output trivy-image-report.json
+        //          '''
+        //     }
+        //     post {
+        //         always { archiveArtifacts 'trivy-image-report.json' }
+        //     }
+        // }
         stage('Snyk Container Scan') {
             steps {
                 sh "snyk auth ${SNYK_TOKEN}"
